@@ -134,6 +134,8 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
+  extern void App_Tick1ms(void);
+  App_Tick1ms();
 }
 
 /******************************************************************************/

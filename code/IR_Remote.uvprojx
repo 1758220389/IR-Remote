@@ -333,7 +333,7 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls></MiscControls>
+              <MiscControls>--no_multibyte_chars</MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
               <IncludePath>.\Start;.\Library;.\Main</IncludePath>
@@ -645,6 +645,16 @@
               <FileType>5</FileType>
               <FilePath>.\Library\stm32f10x_wwdg.h</FilePath>
             </File>
+            <File>
+              <FileName>OLED.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Library\OLED.h</FilePath>
+            </File>
+            <File>
+              <FileName>OLED_Data.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Library\OLED_Data.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -669,6 +679,76 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Main\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\ui.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\ui.h</FilePath>
+            </File>
+            <File>
+              <FileName>buttons_logic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\buttons_logic.c</FilePath>
+            </File>
+            <File>
+              <FileName>buttons_logic.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\buttons_logic.h</FilePath>
+            </File>
+            <File>
+              <FileName>board_keys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\board_keys.c</FilePath>
+            </File>
+            <File>
+              <FileName>board_keys.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\board_keys.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_view.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\ui_view.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_view.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\ui_view.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\ui_font.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_font.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\ui_font.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_presenter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\ui_presenter.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_presenter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\ui_presenter.h</FilePath>
+            </File>
+            <File>
+              <FileName>OLED.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Library\OLED.c</FilePath>
+            </File>
+            <File>
+              <FileName>OLED_Data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Library\OLED_Data.c</FilePath>
             </File>
           </Files>
         </Group>
