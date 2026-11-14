@@ -31,6 +31,18 @@ int main(void)
     assert(p.view.blink_rows==1);
     s.selection=3; UiPresenter_Build(&s,&p);
     assert(strstr(p.view.lines[0],"3")!=0);
+    s.page=UI_PAGE_RECEIVING;s.receive_error=1;UiPresenter_Build(&s,&p);
+    assert(strcmp(p.view.lines[0],"RX INVALID")==0);check_rows(&p);
+    s.receive_error=0;s.page=UI_PAGE_NORMAL;
+    s.profiles[0].kind=UI_PROFILE_BOSCH_ON;
+    s.profiles[0].keys[0].format=UI_SIGNAL_BOSCH144;
+    s.profiles[0].keys[0].length=18;
+    s.profiles[0].keys[0].timings[2]=0xBF;
+    s.profiles[0].keys[0].timings[4]=0xC0;
+    s.profiles[0].keys[0].timings[13]=0x66;
+    s.profiles[0].keys[0].timings[14]=0x20;
+    UiPresenter_Build(&s,&p);assert(strstr(p.view.lines[1],"25.5C")!=0);check_rows(&p);
+    s.profiles[0].kind=UI_PROFILE_RAW;
     for(page=0;page<=UI_PAGE_RESULT;++page)
         for(selection=0;selection<4;++selection)
             for(result=0;result<=UI_RESULT_SAVE_FAILED;++result) {

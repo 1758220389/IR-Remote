@@ -18,7 +18,7 @@
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32F1xx_DFP.2.2.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
-          <Cpu>IRAM(0x20000000,0x5000) IROM(0x08000000,0x10000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000,0x5000) IROM(0x08000000,0xC000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
           <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F10x_128 -FS08000000 -FL020000 -FP0($$Device:STM32F103C8$Flash\STM32F10x_128.FLM))</FlashDriverDll>
@@ -249,7 +249,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x10000</Size>
+                <Size>0xc000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -274,7 +274,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x10000</Size>
+                <Size>0xc000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -363,11 +363,11 @@
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
             <RepFail>1</RepFail>
-            <useFile>0</useFile>
+            <useFile>1</useFile>
             <TextAddressRange>0x08000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\IR_Remote.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -679,6 +679,66 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Main\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>bosch144.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\bosch144.c</FilePath>
+            </File>
+            <File>
+              <FileName>bosch144.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\bosch144.h</FilePath>
+            </File>
+            <File>
+              <FileName>ir_dma_probe.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\ir_dma_probe.c</FilePath>
+            </File>
+            <File>
+              <FileName>ir_dma_probe.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\ir_dma_probe.h</FilePath>
+            </File>
+            <File>
+              <FileName>ir_capture.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\ir_capture.c</FilePath>
+            </File>
+            <File>
+              <FileName>ir_capture.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\ir_capture.h</FilePath>
+            </File>
+            <File>
+              <FileName>ir_hardware.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\ir_hardware.c</FilePath>
+            </File>
+            <File>
+              <FileName>ir_hardware.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\ir_hardware.h</FilePath>
+            </File>
+            <File>
+              <FileName>config_store.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\config_store.c</FilePath>
+            </File>
+            <File>
+              <FileName>config_store.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\config_store.h</FilePath>
+            </File>
+            <File>
+              <FileName>flash_backend.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\flash_backend.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash_backend.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Main\flash_backend.h</FilePath>
             </File>
             <File>
               <FileName>ui.c</FileName>

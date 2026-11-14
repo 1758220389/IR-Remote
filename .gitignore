@@ -24,3 +24,9 @@
 .idea/
 .DS_Store
 Thumbs.db
+
+# Host-test caches, compiler analysis and local device backups
+__pycache__/
+*.py[cod]
+*.su
+/backups/

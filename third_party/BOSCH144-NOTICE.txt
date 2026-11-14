@@ -1,0 +1,29 @@
+BOSCH144 portable adaptation
+
+Sources:
+https://github.com/crankyoldgit/IRremoteESP8266
+https://github.com/crankyoldgit/IRremoteESP8266/blob/master/src/ir_Bosch.h
+https://github.com/crankyoldgit/IRremoteESP8266/blob/master/src/ir_Bosch.cpp
+https://github.com/crankyoldgit/IRremoteESP8266/blob/master/test/ir_Bosch_test.cpp
+
+Upstream copyrights: Copyright 2022 Nico Thien; Copyright 2022 David Conran.
+License: GNU Lesser General Public License version 2.1 or later.
+See IRremoteESP8266-LICENSE.txt for the complete LGPL 2.1 text.
+
+Modified portable C adaptation, 2026-11-14:
+code/Main/bosch144.c, code/Main/bosch144.h, code/tests/test_bosch144.c.
+Replaced C++/Arduino classes and bitfields with explicit byte masks, static
+19-byte caller-owned state, compact UiSignal bytes, callback timing decoder,
+and indexed envelope generation. Added half-degree Celsius controls, strict
+complement/duplicate/checksum validation, atomic decode/import failure, and
+bounded temperature/mode/fan button controls. No heap or full-envelope array
+is used in production code. The native test loads upstream's real timing
+fixture; test-only arrays are not linked into firmware.
+
+The initial state uses the observed 25.5 C COOL / AUTO prefix:
+B2 4D BF 40 C0 3F B2 4D BF 40 C0 3F D5 66 20 00 00
+with REGENERATED checksum 5B. The final checksum byte was NOT physically
+captured. This is a candidate state, NOT a fully received frame or hardware
+compatibility claim. The incomplete 283-duration capture must not be accepted
+as a verified frame. 38 kHz carrier is an upstream nominal assumption, not a
+measurement. Device operation remains to be confirmed on real hardware.

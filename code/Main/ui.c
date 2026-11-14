@@ -31,6 +31,7 @@ void Ui_Button(UiState *s, const ButtonEvent *event, uint32_t now)
                 memset(&s->learning, 0, sizeof(s->learning));
                 memset(&s->captured, 0, sizeof(s->captured));
                 s->learned_mask = 0u;
+                s->receive_error = 0u;
                 s->page = UI_PAGE_RECEIVING;
             } else {
                 s->active_profile = (uint8_t)(s->selection - 1u);
@@ -38,6 +39,10 @@ void Ui_Button(UiState *s, const ButtonEvent *event, uint32_t now)
             }
             s->dirty = 1u;
         }
+    } else if (s->page == UI_PAGE_RECEIVING && s->receive_error &&
+               event->type == BUTTON_SHORT && key == 5u) {
+        s->receive_error = 0u;
+        s->dirty = 1u;
     } else if (s->page == UI_PAGE_RECEIVED && event->type == BUTTON_SHORT) {
         s->learning.keys[key - 1u] = s->captured;
         s->learned_mask |= (uint8_t)(1u << (key - 1u));
@@ -90,8 +95,12 @@ int Ui_Receive(UiState *s, const UiSignal *signal, uint32_t now)
 {
     (void)now;
     if (s->page != UI_PAGE_RECEIVING || signal == 0 ||
-        signal->length == 0u || signal->length > UI_SIGNAL_MAX_TIMINGS) return 0;
+        signal->length == 0u || signal->length > UI_SIGNAL_MAX_TIMINGS ||
+        signal->format > UI_SIGNAL_BOSCH144 ||
+        (signal->format == UI_SIGNAL_BOSCH144 && signal->length != 12u &&
+         signal->length != 18u)) return 0;
     s->captured = *signal;
+    s->receive_error = 0u;
     s->page = UI_PAGE_RECEIVED;
     s->dirty = 1u;
     return 1;

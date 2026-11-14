@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+<defs><style>text{font-family:'Microsoft YaHei',sans-serif;fill:#182b3c;font-size:20px}.title{font-size:30px;font-weight:bold}.small{font-size:17px;fill:#43586c}.w{fill:none;stroke:#243c50;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}.g{fill:none;stroke:#4c647a;stroke-width:4}.v{fill:none;stroke:#d34832;stroke-width:4}.d{fill:#243c50}.red{fill:#be3324}.blue{fill:#006b91}.cap{fill:#fff;stroke:#243c50;stroke-width:3}</style><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 Z" fill="#243c50"/></marker></defs>
+<rect width="1400" height="1000" fill="#f5f8fc"/>
+<text x="35" y="48" class="title">红外收发接线图 · 按面包板电源轨布局整理</text>
+<text x="35" y="82" class="small">3.3V / GND 与 STM32 共用 · 左接收 PB7 · 右发射 PB6 · 有圆点才连接；拱桥表示跨过、不连接</text>
+<rect x="25" y="105" width="1350" height="700" rx="14" fill="#fff" stroke="#cbd7e2"/>
+<!-- rails: negative above positive -->
+<path class="g" d="M75 150 H1350"/><text x="40" y="135">−</text><text x="80" y="137">GND / 负电源轨</text>
+<path class="v" d="M75 300 H1350"/><text x="40" y="290" class="red">+</text><text x="80" y="286" class="red">3.3V / 正电源轨</text>
+<!-- receiver decoupling -->
+<text x="320" y="118" class="blue">接收头附近</text>
+<path class="w" d="M350 150 V205 M350 220 V300 M500 150 V205 M500 220 V300"/>
+<path class="w" d="M332 205 H368 M332 220 H368 M482 205 H518 M482 220 H518"/>
+<text x="370" y="201">104</text><text x="370" y="231" class="small">100nF</text><text x="520" y="201">475</text><text x="520" y="231" class="small">4.7µF</text><text x="477" y="252" class="red">+</text>
+<!-- transmitter decoupling -->
+<text x="910" y="118" class="blue">发射支路附近</text>
+<path class="w" d="M850 150 V205 M850 220 V300 M1000 150 V205 M1000 220 V300 M1150 150 V205 M1150 220 V300"/>
+<path class="w" d="M832 205 H868 M832 220 H868 M982 205 H1018 M982 220 H1018 M1132 205 H1168 M1132 220 H1168"/>
+<text x="870" y="201">104</text><text x="870" y="231" class="small">100nF</text><text x="1020" y="201">475</text><text x="1020" y="231" class="small">4.7µF</text><text x="1170" y="201">475</text><text x="1170" y="231" class="small">4.7µF</text><text x="977" y="252" class="red">+</text><text x="1127" y="252" class="red">+</text>
+<!-- receiver -->
+<rect x="300" y="470" width="240" height="180" rx="12" fill="#edf7fc" stroke="#006b91" stroke-width="2"/>
+<text x="345" y="550" class="title">1838B</text><text x="330" y="580" class="small">功能示意，不代表脚序</text>
+<path class="w" d="M420 300 V470 M420 650 V730 H140 V314 Q118 300 140 286 V150"/>
+<text x="433" y="461">VCC</text><text x="433" y="680">GND</text>
+<path class="w" d="M60 610 H126 Q140 590 154 610 H300"/><text x="65" y="594" class="blue">PB7</text><text x="245" y="594">OUT</text>
+<text x="65" y="770" class="small">OUT 经过 GND 竖线处不连接；GND 竖线经过 3.3V 轨也不连接。</text>
+<!-- base pull down from GND, crossing positive rail without connection -->
+<path class="w" d="M740 150 V286 Q718 300 740 314 V420 H780 M850 420 H900 M970 420 H1060 V650"/>
+<rect x="780" y="408" width="70" height="24" class="cap"/><rect x="900" y="408" width="70" height="24" class="cap"/>
+<text x="776" y="396">4.7kΩ</text><text x="895" y="396">4.7kΩ</text><text x="780" y="463" class="small">两个串联 = 9.4kΩ 基极下拉</text>
+<!-- LED branch -->
+<path class="w" d="M1250 300 V365 M1250 435 V480 M1250 515 V560 L1170 620"/>
+<rect x="1238" y="365" width="24" height="70" class="cap"/><text x="1105" y="389">100Ω</text><text x="1105" y="416" class="small">¼W</text>
+<path class="w" d="M1234 480 H1266 L1250 510 Z M1230 515 H1270"/>
+<path class="w" d="M1280 477 l25 -18 M1283 497 l25 -18" marker-end="url(#a)"/>
+<text x="1030" y="507">TSAL6200</text><text x="1270" y="466" class="small">A 阳极</text><text x="1270" y="542" class="small">K 阴极</text>
+<!-- transistor -->
+<path class="w" d="M1170 595 V705 M1170 680 L1250 730 V780 H1340 V314 Q1318 300 1340 286 V150"/>
+<path class="w" d="M1210 705 l25 16" marker-end="url(#a)"/>
+<text x="1165" y="574">3 C</text><text x="1115" y="630">2 B</text><text x="1257" y="729">1 E</text><text x="1192" y="669">S8050</text>
+<!-- GPIO to base -->
+<path class="w" d="M750 650 H860 M940 650 H1170"/><rect x="860" y="638" width="80" height="24" class="cap"/><text x="752" y="633" class="blue">PB6</text><text x="867" y="620">1kΩ</text>
+<!-- connected junctions -->
+<g class="d"><circle cx="350" cy="150" r="5"/><circle cx="350" cy="300" r="5"/><circle cx="500" cy="150" r="5"/><circle cx="500" cy="300" r="5"/><circle cx="850" cy="150" r="5"/><circle cx="850" cy="300" r="5"/><circle cx="1000" cy="150" r="5"/><circle cx="1000" cy="300" r="5"/><circle cx="1150" cy="150" r="5"/><circle cx="1150" cy="300" r="5"/><circle cx="140" cy="150" r="5"/><circle cx="420" cy="300" r="5"/><circle cx="740" cy="150" r="5"/><circle cx="1060" cy="650" r="5"/><circle cx="1250" cy="300" r="5"/><circle cx="1340" cy="150" r="5"/></g>
+<text x="35" y="845">① 475 = 4.7µF，不是 4.7nF；发射端两个 475 并联约 9.4µF。</text>
+<text x="35" y="880">② 104 通常为无极性陶瓷；475 若有极性，下侧“+”接 3.3V，上侧“−”接 GND。</text>
+<text x="35" y="915">③ 三极管按已提供资料：1=E、2=B、3=C；接收头脚序及 3.3V 适用性须按实物资料确认。</text>
+<text x="35" y="950">④ 面包板电源轨可能中间断开；先断电测通断，再接线。电容贴近负载，电源与回地线尽量短。</text>
+</svg>

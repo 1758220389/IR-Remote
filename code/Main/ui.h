@@ -4,17 +4,24 @@
 #include "buttons_logic.h"
 #define UI_PROFILE_COUNT 3u
 #define UI_KEY_COUNT 5u
-#define UI_SIGNAL_MAX_TIMINGS 128u
+#define UI_SIGNAL_MAX_TIMINGS 256u
 #define UI_BLINK_MS 500u
 #define UI_RESULT_MS 1000u
+#define UI_SIGNAL_RAW 0u
+#define UI_SIGNAL_BOSCH144 1u
+#define UI_PROFILE_RAW 0u
+#define UI_PROFILE_BOSCH_ON 1u
+#define UI_PROFILE_BOSCH_OFF 2u
 typedef struct {
     uint16_t length;
     uint16_t carrier_khz;
+    uint16_t format; /* RAW durations or compact BOSCH144 bytes. */
     uint16_t timings[UI_SIGNAL_MAX_TIMINGS];
 } UiSignal;
 typedef struct {
     UiSignal keys[UI_KEY_COUNT];
     uint8_t bound_mask;
+    uint8_t kind; /* RAW, or dynamic Bosch model power state. */
 } UiProfile;
 typedef enum {
     UI_PAGE_NORMAL = 0, UI_PAGE_SETTINGS, UI_PAGE_RECEIVING,
@@ -46,6 +53,7 @@ typedef struct {
     uint8_t learned_mask;
     uint8_t dirty; /* Renderer clears after drawing. */
     uint8_t blink;
+    uint8_t receive_error; /* Explicit invalid-frame retry, never a fake receive. */
     UiResult result;
     UiProfile profiles[UI_PROFILE_COUNT];
     UiProfile learning;

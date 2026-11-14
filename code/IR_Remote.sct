@@ -1,0 +1,12 @@
+; 64KB guaranteed Flash: application 48KB, configuration banks last 16KB.
+; Never place application sections in 0x0800C000..0x0800FFFF.
+LR_IROM1 0x08000000 0x0000C000 {
+  ER_IROM1 0x08000000 0x0000C000 {
+    *.o (RESET, +First)
+    *(InRoot$$Sections)
+    .ANY (+RO)
+  }
+  RW_IRAM1 0x20000000 0x00005000 {
+    .ANY (+RW +ZI)
+  }
+}
