@@ -1,4 +1,5 @@
 #include "config_store.h"
+#include "ac_codec.h"
 #include <string.h>
 #define MAGIC 0x43465249UL
 #define COMMIT 0xA55Au
@@ -73,38 +74,26 @@ static void output_word(UiProfile *profiles, uint32_t offset, uint16_t value)
     else sig->timings[field-3]=value;
 }
 /* Only live compact bytes are interpreted; unused slots remain lossless. */
-static int signal_valid(uint16_t length, uint16_t carrier, uint16_t format,
-                        const uint16_t *timings, int bound)
+static int signal_valid(const UiSignal *sig,int bound)
 {
-    unsigned j,sum=0;
-    if(format>UI_SIGNAL_BOSCH144 || length>UI_SIGNAL_MAX_TIMINGS ||
-       (bound && !length)) return 0;
-    if(format==UI_SIGNAL_RAW) return 1;
-    if((length!=12 && length!=18) || carrier!=38) return 0;
-    for(j=0;j<length;j++) if(timings[j]>255u) return 0;
-    for(j=0;j<12;j+=2) if((timings[j]^timings[j+1])!=255u) return 0;
-    for(j=0;j<6;j++) if(timings[j]!=timings[j+6]) return 0;
-    if(length==12) {
-        /* Bosch's fixed OFF command, not arbitrary Coolix commands. */
-        static const uint16_t off[6]={0xB2,0x4D,0x7B,0x84,0xE0,0x1F};
-        for(j=0;j<6;j++) if(timings[j]!=off[j]) return 0;
-    } else {
-        if(timings[0]!=0xB2u || timings[12]!=0xD5u) return 0;
-        for(j=12;j<17;j++) sum+=timings[j];
-        if((sum&255u)!=timings[17]) return 0;
-    }
-    return 1;
+    if(sig->length>UI_SIGNAL_MAX_TIMINGS || (bound && !sig->length)) return 0;
+    if(sig->format==UI_SIGNAL_RAW) return 1;
+    return Ac_Validate(sig);
 }
-static int bank_valid(ConfigStore *s, unsigned bank, int committed,
-                       uint32_t *generation, uint8_t *active)
+static int bank_valid(ConfigStore *s,unsigned bank,int committed,
+                       uint32_t *generation,uint8_t *active)
 {
-    unsigned char h[CONFIG_STORE_HEADER_SIZE], bytes[2];
-    uint32_t crc,off;
-    unsigned i,k,j;
-    uint16_t mask,length,kind,format,carrier,timings[18];
-    uint32_t signal_offset;
+    unsigned char h[CONFIG_STORE_HEADER_SIZE],bytes[2];
+    uint32_t crc,off,signal_offset;
+    unsigned i,k,j,version;
+    uint16_t mask,kind;
+    UiSignal sig;
+    AcState state;
+    AcStatus status;
     if(!s->backend.read(s->backend.context,bank,0,h,sizeof(h))) return -1;
-    if(get32(h)!=MAGIC || get16(h+4)!=2 || get16(h+6)!=CONFIG_STORE_HEADER_SIZE ||
+    version=get16(h+4);
+    if(get32(h)!=MAGIC || (version!=2u && version!=3u) ||
+       get16(h+6)!=CONFIG_STORE_HEADER_SIZE ||
        get32(h+12)!=CONFIG_STORE_PAYLOAD_SIZE || get16(h+16)!=UI_SIGNAL_MAX_TIMINGS ||
        h[18]!=UI_PROFILE_COUNT || h[19]!=UI_KEY_COUNT ||
        get16(h+22)!=sizeof(UiProfile) || get16(h+28)!=0 ||
@@ -112,32 +101,37 @@ static int bank_valid(ConfigStore *s, unsigned bank, int committed,
     crc=header_crc(h);
     for(off=0;off<CONFIG_STORE_PAYLOAD_SIZE;off+=2) {
         if(!s->backend.read(s->backend.context,bank,CONFIG_STORE_HEADER_SIZE+off,bytes,2)) return -1;
-        crc=crc_byte(crc,bytes[0]); crc=crc_byte(crc,bytes[1]);
+        crc=crc_byte(crc,bytes[0]);crc=crc_byte(crc,bytes[1]);
     }
     if((crc^0xFFFFFFFFUL)!=get32(h+24) || get16(h+20)>=UI_PROFILE_COUNT) return 0;
-    for(i=0;i<UI_PROFILE_COUNT;i++) {
+    memset(&sig,0,sizeof(sig));
+    for(i=0;i<UI_PROFILE_COUNT;++i) {
         off=CONFIG_STORE_HEADER_SIZE+i*CONFIG_STORE_PROFILE_SIZE;
         if(!read_word(s,bank,off+UI_KEY_COUNT*CONFIG_STORE_SIGNAL_SIZE,&mask)) return -1;
-        kind=(uint16_t)(mask>>8); mask&=255u;
-        if((mask & ~((1u<<UI_KEY_COUNT)-1u)) || kind>UI_PROFILE_BOSCH_OFF) return 0;
-        if(kind && mask!=((1u<<UI_KEY_COUNT)-1u)) return 0;
-        for(k=0;k<UI_KEY_COUNT;k++) {
+        kind=(uint16_t)(mask>>8);mask&=255u;
+        if((mask & ~31u) || kind>(version==2u?UI_PROFILE_BOSCH_OFF:UI_PROFILE_LAST)) return 0;
+        if(kind && mask!=31u) return 0;
+        for(k=0;k<UI_KEY_COUNT;++k) {
             signal_offset=off+k*CONFIG_STORE_SIGNAL_SIZE;
-            if(!read_word(s,bank,signal_offset,&length) ||
-               !read_word(s,bank,signal_offset+2u,&carrier) ||
-               !read_word(s,bank,signal_offset+4u,&format)) return -1;
-            if(format>UI_SIGNAL_BOSCH144 || length>UI_SIGNAL_MAX_TIMINGS) return 0;
-            if(format==UI_SIGNAL_BOSCH144) {
-                if(length!=12 && length!=18) return 0;
-                for(j=0;j<length;j++)
-                    if(!read_word(s,bank,signal_offset+6u+2u*j,&timings[j])) return -1;
+            if(!read_word(s,bank,signal_offset,&sig.length) ||
+               !read_word(s,bank,signal_offset+2u,&sig.carrier_khz) ||
+               !read_word(s,bank,signal_offset+4u,&sig.format)) return -1;
+            if(sig.length>UI_SIGNAL_MAX_TIMINGS ||
+               sig.format>(version==2u?UI_SIGNAL_BOSCH144:UI_SIGNAL_LAST)) return 0;
+            if(sig.format!=UI_SIGNAL_RAW) {
+                if(sig.length>AC_MAX_BYTES) return 0;
+                for(j=0;j<sig.length;++j)
+                    if(!read_word(s,bank,signal_offset+6u+2u*j,&sig.timings[j])) return -1;
             }
-            if(!signal_valid(length,carrier,format,timings,(mask & (1u<<k))!=0)) return 0;
-            if(kind && k==0 && (length!=18 || format!=UI_SIGNAL_BOSCH144)) return 0;
+            if(!signal_valid(&sig,(mask & (1u<<k))!=0)) return 0;
+            if(kind && k==0u) {
+                if((kind<=UI_PROFILE_BOSCH_OFF)!=(sig.format==UI_SIGNAL_BOSCH144)) return 0;
+                if(Ac_Import(&state,&sig)!=AC_IMPORT_STATE || !state.power ||
+                   !Ac_GetStatus(&state,&status)) return 0;
+            }
         }
     }
-    *generation=get32(h+8); *active=(uint8_t)get16(h+20);
-    return 1;
+    *generation=get32(h+8);*active=(uint8_t)get16(h+20);return 1;
 }
 static int newest(ConfigStore *s, uint32_t *generation, uint8_t *active)
 {
@@ -177,12 +171,10 @@ static int source_valid(const UiProfile *profiles, uint8_t active,
     if(active>=UI_PROFILE_COUNT || (replacement && index>=UI_PROFILE_COUNT)) return 0;
     for(i=0;i<UI_PROFILE_COUNT;i++) {
         p=(replacement && i==index)?replacement:&profiles[i];
-        if((p->bound_mask & ~((1u<<UI_KEY_COUNT)-1u)) || p->kind>UI_PROFILE_BOSCH_OFF) return 0;
-        if(p->kind && (p->bound_mask!=((1u<<UI_KEY_COUNT)-1u) ||
-           p->keys[0].format!=UI_SIGNAL_BOSCH144 || p->keys[0].length!=18)) return 0;
+        if((p->bound_mask & ~31u) || p->kind>UI_PROFILE_LAST) return 0;
+        if(p->kind && !Ac_ProfileValid(p)) return 0;
         for(k=0;k<UI_KEY_COUNT;k++) {
-            if(!signal_valid(p->keys[k].length,p->keys[k].carrier_khz,
-               p->keys[k].format,p->keys[k].timings,(p->bound_mask & (1u<<k))!=0)) return 0;
+            if(!signal_valid(&p->keys[k],(p->bound_mask & (1u<<k))!=0)) return 0;
         }
     }
     return 1;
@@ -201,7 +193,7 @@ int ConfigStore_SaveReplacement(ConfigStore *s, const UiProfile *profiles,
     if(bank==-2) return 0;
     bank=bank<0?0:1-bank;
     memset(h,0,sizeof(h));
-    put32(h,MAGIC); put16(h+4,2); put16(h+6,CONFIG_STORE_HEADER_SIZE);
+    put32(h,MAGIC); put16(h+4,3); put16(h+6,CONFIG_STORE_HEADER_SIZE);
     put32(h+8,generation+1u); put32(h+12,CONFIG_STORE_PAYLOAD_SIZE);
     put16(h+16,UI_SIGNAL_MAX_TIMINGS); h[18]=UI_PROFILE_COUNT; h[19]=UI_KEY_COUNT;
     put16(h+20,active); put16(h+22,(uint16_t)sizeof(UiProfile));

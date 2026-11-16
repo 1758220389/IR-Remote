@@ -32,6 +32,8 @@ def main():
         "test_oled_pins": ["tests/view/test_oled_pins.c", "code/Library/OLED.c",
                            "code/Library/OLED_Data.c", "-lm"],
     }
+    cases["test_ui_view"] += ["code/Main/" + name + ".c" for name in
+                              ("bosch144", "ac_codec", "ac_gree", "ac_midea", "ac_coolix", "ac_haier")]
     for name, sources in cases.items():
         executable = output / (name + ".exe")
         subprocess.run(common + sources + ["-o", str(executable)],
@@ -50,8 +52,8 @@ def main():
             assert regenerated.read_bytes() == (ROOT / "code/Main/ui_font.c").read_bytes()
             print("installed-source font regeneration is byte-identical: PASS")
         files = sorted(output.glob("ui_page_*.pbm"))
-        assert len(files) == 11
-        sheet = Image.new("RGB", (3 * 536, 4 * 292), "#18212c")
+        assert len(files) == 21
+        sheet = Image.new("RGB", (3 * 536, ((len(files)+2)//3) * 292), "#18212c")
         draw = ImageDraw.Draw(sheet)
         for index, path in enumerate(files):
             # PBM black bits are lit pixels on OLED: invert for white-on-black.
@@ -62,7 +64,7 @@ def main():
             draw.text((x, y-18), path.stem, fill="white")
         proof = output / "ui_view_pages.png"
         sheet.save(proof)
-        print(f"11 framebuffer layout proofs: {proof}")
+        print(f"{len(files)} framebuffer layout proofs: {proof}")
     print("ALL VIEW/GPIO TESTS PASSED")
 
 

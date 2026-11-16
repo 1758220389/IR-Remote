@@ -113,13 +113,13 @@ static void hardware_discard_test(void) {
         IrHardware_Poll(0);
         assert(!probe_running);
         saved=g_ir_dma_probe.fall_count;
-        assert(IrHardware_TryReceive(&out)==-1);
+        assert(IrHardware_TryReceive(&out)==(variant==4u?IR_RECEIVE_UNSUPPORTED:-1));
         assert(IrHardware_LastReceiveError()!=0u);
         assert(out.length==0xA5A5u); /* no partial output on failure */
         mock_now+=2000000u; IrHardware_Poll(0);
         IrHardware_SetReceiveEnabled(1);
         assert(!probe_running && g_ir_dma_probe.fall_count==saved);
-        assert(IrHardware_TryReceive(&out)==-1);
+        assert(IrHardware_TryReceive(&out)==(variant==4u?IR_RECEIVE_UNSUPPORTED:-1));
         if (variant==0u) {
             UiSignal replay={0};
             replay.length=3u; replay.carrier_khz=38u;
@@ -156,7 +156,7 @@ static void hardware_bosch_test(void) {
         /* mode 3 stops after the first two ON sections: not a valid OFF. */
         mock_now+=30000u; IrHardware_Poll(0);
         if (mode>=2u) {
-            assert(IrHardware_TryReceive(&out)==-1);
+            assert(IrHardware_TryReceive(&out)==(mode==3u?IR_RECEIVE_AMBIGUOUS:-1));
             continue;
         }
         assert(IrHardware_TryReceive(&out)==1);
@@ -175,6 +175,25 @@ static void hardware_bosch_test(void) {
         encoded=snapshot; encoded.format=99u;
         assert(!IrHardware_Send(&encoded));
     }
+}
+static void hardware_haier_gap_test(void)
+{
+    static const uint16_t bytes[9]={165,1,32,1,0,192,32,0,167};
+    UiSignal signal;
+    unsigned i;
+    memset(&signal,0,sizeof(signal));signal.format=UI_SIGNAL_HAIER;
+    signal.carrier_khz=38u;signal.length=9u;
+    memcpy(signal.timings,bytes,sizeof(bytes));
+    mock_now=UINT32_MAX-100000u;IrHardware_Init();
+    assert(IrHardware_Send(&signal));
+    for(i=0u;i<149u;++i) TIM3_IRQHandler();
+    assert(!mock_gate && IrHardware_Busy());
+    assert(!IrHardware_Send(&signal));
+    mock_now+=149999u;assert(IrHardware_Busy());
+    ++mock_now;assert(!IrHardware_Busy());
+    assert(IrHardware_Send(&signal));
+    for(i=0u;i<149u;++i) TIM3_IRQHandler();
+    mock_now+=150000u;assert(!IrHardware_Busy());
 }
 static void frame(IrCaptureState *s, uint32_t t) {
     unsigned i;
@@ -273,6 +292,7 @@ int main(void) {
     hardware_rx_test();
     hardware_discard_test();
     hardware_bosch_test();
+    hardware_haier_gap_test();
     puts("IR capture/replay tests passed");
     return 0;
 }

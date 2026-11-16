@@ -1,0 +1,21 @@
+{
+  "user_report": "OLED AC GREE 23C; user confirmed source is a phone universal IR remote, not the previous Midea remote",
+  "transmitter": "Phone universal infrared remote; application and handset unspecified",
+  "user_reported_compatibility": "This phone remote configuration has previously controlled a Gree air conditioner",
+  "original_display_temperature_confirmed": false,
+  "stm32_gree_appliance_control_tested": false,
+  "format": "GREE64",
+  "payload_hex": "39 07 20 50 00 20 00 C0",
+  "temperature_c": 23,
+  "mode_code": 1,
+  "fan_code": 3,
+  "power_on": true,
+  "checksum_ok": true,
+  "durations": 139,
+  "header_us": [
+    8995,
+    4504
+  ],
+  "dma_flags": 0,
+  "carrier_khz_assumed": 38
+}

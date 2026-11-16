@@ -9,9 +9,24 @@
 #define UI_RESULT_MS 1000u
 #define UI_SIGNAL_RAW 0u
 #define UI_SIGNAL_BOSCH144 1u
+#define UI_SIGNAL_GREE 2u
+#define UI_SIGNAL_MIDEA 3u
+#define UI_SIGNAL_COOLIX 4u
+#define UI_SIGNAL_HAIER 5u
+#define UI_SIGNAL_HAIER_YRW02 6u
+#define UI_SIGNAL_HAIER160 7u
+#define UI_SIGNAL_HAIER176 8u
+#define UI_SIGNAL_LAST UI_SIGNAL_HAIER176
 #define UI_PROFILE_RAW 0u
 #define UI_PROFILE_BOSCH_ON 1u
 #define UI_PROFILE_BOSCH_OFF 2u
+#define UI_PROFILE_AC_ON 3u
+#define UI_PROFILE_AC_OFF 4u
+#define UI_PROFILE_LAST UI_PROFILE_AC_OFF
+#define UI_RX_INVALID 1u
+#define UI_RX_NEED_ON 2u
+#define UI_RX_AMBIGUOUS 3u
+#define UI_RX_UNSUPPORTED 4u
 typedef struct {
     uint16_t length;
     uint16_t carrier_khz;
@@ -25,7 +40,8 @@ typedef struct {
 } UiProfile;
 typedef enum {
     UI_PAGE_NORMAL = 0, UI_PAGE_SETTINGS, UI_PAGE_RECEIVING,
-    UI_PAGE_RECEIVED, UI_PAGE_SAVE_SELECT, UI_PAGE_RESULT
+    UI_PAGE_RECEIVED, UI_PAGE_SAVE_SELECT, UI_PAGE_RESULT,
+    UI_PAGE_DEVICE_TYPE, UI_PAGE_AC_CONFIRM, UI_PAGE_AC_UNSUPPORTED
 } UiPage;
 typedef enum {
     UI_RESULT_NONE = 0, UI_RESULT_SAVED_RAM, UI_RESULT_SAVED_FLASH,
@@ -51,6 +67,7 @@ typedef struct {
     uint8_t selection; /* Settings: 0=Learning, 1..3=Config1..3. */
     uint8_t save_profile;
     uint8_t learned_mask;
+    uint8_t learn_ac; /* Question selection, then session mode: 1=AC, 0=keys. */
     uint8_t dirty; /* Renderer clears after drawing. */
     uint8_t blink;
     uint8_t receive_error; /* Explicit invalid-frame retry, never a fake receive. */
@@ -73,4 +90,5 @@ void Ui_Init(UiState *state, const UiCallbacks *callbacks, uint32_t now);
 void Ui_Button(UiState *state, const ButtonEvent *event, uint32_t now);
 int Ui_Receive(UiState *state, const UiSignal *signal, uint32_t now);
 void Ui_Tick(UiState *state, uint32_t now);
+void Ui_ReceiveError(UiState *state, uint8_t reason);
 #endif

@@ -22,7 +22,7 @@ int IrHardware_Busy(void) { return ir_busy; }
 int IrHardware_Send(const UiSignal *signal) { if(ir_busy || !signal) return 0; last_sent=*signal; ++ir_send_count; return 1; }
 int IrHardware_TryReceive(UiSignal *signal) {
     if(!capture_ready || !rx_enabled) return 0;
-    if(capture_ready<0) { capture_ready=0; return -1; }
+    if(capture_ready<0) { int result=capture_ready;capture_ready=0;return result; }
     *signal=capture_input; capture_ready=0; return 1;
 }
 static int rd(void *c,unsigned b,uint32_t off,void *out,uint32_t n) {
@@ -52,13 +52,21 @@ int main(void) {
       assert(Bosch144_StateFromSignal(&ac,&ui.profiles[0].keys[0]));
       assert(Bosch144_GetMode(&ac)==BOSCH144_MODE_DRY && Bosch144_GetFan(&ac)==BOSCH144_FAN_20);
     }
+    { int before=ir_send_count;
+      ui.profiles[0].kind=UI_PROFILE_AC_ON; /* Wrong kind/protocol pairing. */
+      key(1,BUTTON_SHORT);assert(ir_send_count==before);
+      ui.profiles[0].kind=UI_PROFILE_BOSCH_ON;
+    }
     initialize_application();ir_send_count=0;
     ui.active_profile=2; milliseconds=10; service_application();
     milliseconds=1011; service_application();
     assert(g_app_diagnostics.store_save_ok==1);
     initialize_application();
     assert(ui.active_profile==2 && g_app_diagnostics.store_loaded);
-    key(5,BUTTON_LONG);key(5,BUTTON_SHORT);service_application();assert(rx_enabled);
+    key(5,BUTTON_LONG);key(5,BUTTON_SHORT);
+    assert(ui.page==UI_PAGE_DEVICE_TYPE);
+    key(2,BUTTON_SHORT);key(5,BUTTON_SHORT);
+    service_application();assert(rx_enabled);
     capture_ready=-1;service_application();
     assert(ui.page==UI_PAGE_RECEIVING && ui.receive_error && !rx_enabled);
     key(5,BUTTON_SHORT);service_application();assert(!ui.receive_error && rx_enabled);
@@ -72,5 +80,29 @@ int main(void) {
     initialize_application();assert(ui.profiles[2].bound_mask==16);
     key(5,BUTTON_SHORT);assert(ir_send_count==1);
     ir_busy=1; key(5,BUTTON_SHORT);assert(g_app_diagnostics.tx_rejected==1);
-    puts("application integration: capture/bind/save/reboot/replay/selection persistence PASS");return 0;
+    ui.page=UI_PAGE_RECEIVING;ui.learn_ac=1u;ui.receive_error=0u;
+    ir_busy=0;capture_ready=IR_RECEIVE_UNSUPPORTED;service_application();
+    assert(ui.page==UI_PAGE_AC_UNSUPPORTED && !rx_enabled);
+    key(5,BUTTON_SHORT);capture_ready=IR_RECEIVE_AMBIGUOUS;service_application();
+    assert(ui.page==UI_PAGE_RECEIVING && ui.receive_error==UI_RX_AMBIGUOUS);
+    key(5,BUTTON_SHORT);
+    { Bosch144State ac;
+      Bosch144_Init(&ac);Bosch144_SetPower(&ac,0u);
+      assert(Bosch144_Generate(&ac,&capture_input));
+      capture_ready=1;service_application();
+      assert(ui.receive_error==UI_RX_NEED_ON && ui.page==UI_PAGE_RECEIVING);
+      key(5,BUTTON_SHORT);Bosch144_SetPower(&ac,1u);
+      assert(Bosch144_Generate(&ac,&capture_input));
+      capture_ready=1;service_application();
+      assert(ui.page==UI_PAGE_AC_CONFIRM && !rx_enabled);
+      key(5,BUTTON_SHORT);assert(ui.page==UI_PAGE_SAVE_SELECT);
+      key(1,BUTTON_SHORT);assert(ui.save_profile==1u);
+      key(5,BUTTON_LONG);assert(ui.result==UI_RESULT_SAVED_FLASH);
+      initialize_application();assert(ui.profiles[1].kind==UI_PROFILE_BOSCH_ON);
+      assert(ui.profiles[2].kind==UI_PROFILE_RAW && ui.profiles[2].bound_mask==16u);
+      ui.active_profile=1u;key(1,BUTTON_SHORT);
+      assert(Bosch144_StateFromSignal(&ac,&ui.profiles[1].keys[0]));
+      assert(Bosch144_GetTempHalf(&ac)==52u);
+    }
+    puts("application integration: raw+AC identify/confirm/save/reboot/dynamic control PASS");return 0;
 }

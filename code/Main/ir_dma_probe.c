@@ -1,6 +1,11 @@
 #include "ir_dma_probe.h"
 
 volatile IrDmaProbe g_ir_dma_probe;
+uint32_t IrDmaProbe_CaptureMapr(uint32_t previous) {
+    /* RM0008 MAPR: SWJ_CFG[26:24] write-only/undefined readback, TIM4_REMAP[12].
+     * Do not let a MAPR read-modify-write restore JTAG or disable SWD. */
+    return (previous & ~(0x07000000UL | 0x00001000UL)) | 0x02000000UL;
+}
 
 #ifndef IR_DMA_PROBE_PORTABLE
 #include "stm32f10x.h"
@@ -22,7 +27,7 @@ void IrDmaProbe_Begin(void) {
      * so forced-inactive OC1 alone cannot keep the physical TX pin LOW. */
     GPIOB->BRR=GPIO_Pin_6;
     GPIOB->CRL=(GPIOB->CRL & ~(0xFul<<24)) | (0x2ul<<24);
-    AFIO->MAPR &= ~AFIO_MAPR_TIM4_REMAP;
+    AFIO->MAPR=IrDmaProbe_CaptureMapr(AFIO->MAPR);
     TIM4->CR1=0u;
     TIM4->DIER=0u;
     TIM4->CCER=0u;

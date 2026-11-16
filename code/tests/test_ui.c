@@ -85,6 +85,9 @@ static void enter_learning(UiState *u)
 {
     press(u, 5u, BUTTON_LONG, 0u);
     press(u, 5u, BUTTON_SHORT, 0u);
+    assert(u->page == UI_PAGE_DEVICE_TYPE);
+    press(u, 2u, BUTTON_SHORT, 0u); /* Ordinary device. */
+    press(u, 5u, BUTTON_SHORT, 0u);
 }
 static void test_empty_learning_exit_without_save(void)
 {
@@ -343,6 +346,9 @@ static void test_button_ui_transition_no_false_short(void)
     sample(&b, &d, 16u, 1120u);
     sample(&b, &d, 0u, 1150u);
     sample(&b, &d, 0u, 1170u);
+    assert(u.page == UI_PAGE_DEVICE_TYPE);
+    press(&u, 2u, BUTTON_SHORT, 1171u);
+    press(&u, 5u, BUTTON_SHORT, 1172u);
     assert(u.page == UI_PAGE_RECEIVING);
     bind_one(&u, 5u, 123u);
     sample(&b, &d, 16u, 1200u);
@@ -390,6 +396,8 @@ static void test_bound_send_and_invalid_events(void)
     press(&u, 4u, BUTTON_SHORT, 0u);
     assert(u.selection == 0u);
     press(&u, 5u, BUTTON_SHORT, 0u);
+    press(&u, 2u, BUTTON_SHORT, 0u);
+    press(&u, 5u, BUTTON_SHORT, 0u);
     bind_one(&u, 1u, 123u);
     press(&u, 5u, BUTTON_LONG, 0u);
     assert(u.save_profile == 2u);
@@ -435,8 +443,18 @@ static void test_long_one_to_four_never_send(void)
     assert(sent == 0u && u.page == UI_PAGE_NORMAL);
 }
 
+static void test_learning_asks_device_type_before_listening(void)
+{
+    UiState u;
+    Ui_Init(&u, 0, 0u);
+    press(&u, 5u, BUTTON_LONG, 0u);
+    press(&u, 5u, BUTTON_SHORT, 0u);
+    assert(u.page != UI_PAGE_RECEIVING);
+    assert(u.learned_mask == 0u);
+}
 int main(void)
 {
+    test_learning_asks_device_type_before_listening();
     test_long_one_to_four_never_send();
     test_no_synthetic_receive_and_fresh_learning_session();
     test_bound_send_and_invalid_events();

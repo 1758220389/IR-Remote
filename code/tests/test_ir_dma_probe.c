@@ -6,6 +6,16 @@ int main(void) {
     uint16_t fall[2]={100u,2300u};
     uint16_t rise[2]={650u,3950u};
     uint16_t out[4], n;
+    {
+        unsigned swj;
+        for(swj=0u;swj<8u;++swj) {
+            uint32_t input=0x0000FFFFu | ((uint32_t)swj<<24);
+            uint32_t mapped=IrDmaProbe_CaptureMapr(input);
+            assert((mapped & 0x07000000u)==0x02000000u);
+            assert(!(mapped & 0x00001000u));
+            assert((mapped & 0x0000EFFFu)==(input & 0x0000EFFFu));
+        }
+    }
     assert(IrDmaProbe_Reconstruct(fall,2u,rise,2u,0u,0u,out,4u,&n)==0u);
     assert(n==3u && out[0]==550u && out[1]==1650u && out[2]==1650u);
     puts("ir_dma_probe: alternating marks/spaces PASS");

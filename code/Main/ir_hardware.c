@@ -1,6 +1,6 @@
 #include "ir_hardware.h"
 #include "ir_capture.h"
-#include "bosch144.h"
+#include "ac_codec.h"
 #include "ir_dma_probe.h"
 #ifdef IR_HARDWARE_TEST
 extern void IrPlatform_Init(void);
@@ -158,6 +158,7 @@ static void IrPlatform_Init(void) {
 
 static UiSignal transmit;
 static volatile uint8_t transmitting;
+static volatile uint32_t tx_idle_at, tx_idle_us;
 static uint16_t tx_index, tx_count;
 static uint8_t receive_requested, receive_active, ready;
 static volatile uint8_t settling;
@@ -180,7 +181,7 @@ void IrHardware_Init(void) {
     IrPlatform_RxMask(0);
     IrPlatform_Gate(0);
     IrPlatform_Stop();
-    transmitting=0u; receive_error=0u;
+    transmitting=0u;receive_error=0u;tx_idle_at=tx_idle_us=0u;
     receive_requested=receive_active=settling=ready=0u;
 }
 void IrHardware_SetReceiveEnabled(uint8_t enabled) {
@@ -234,8 +235,11 @@ void IrHardware_Poll(uint32_t now_ms) {
 }
 int IrHardware_TryReceive(UiSignal *dest) {
     uint16_t i, count;
+    int detected;
     if (!ready || !receive_requested || transmitting || !dest) return 0;
     count=(uint16_t)(g_ir_dma_probe.fall_count+g_ir_dma_probe.rise_count-1u);
+    if (receive_error & IR_RX_ERROR_UNSUPPORTED) return IR_RECEIVE_UNSUPPORTED;
+    if (receive_error & IR_RX_ERROR_AMBIGUOUS) return IR_RECEIVE_AMBIGUOUS;
     if (receive_error) return -1;
     if (g_ir_dma_probe.flags) receive_error=IR_RX_ERROR_DMA | g_ir_dma_probe.flags;
     else if (!g_ir_dma_probe.fall_count ||
@@ -245,30 +249,38 @@ int IrHardware_TryReceive(UiSignal *dest) {
     for (i=0u;i<count;++i) if (captured_duration(0,i)<100u) {
         receive_error=IR_RX_ERROR_INTERVAL; return -1;
     }
-    /* A Bosch-like header must never fall back to a learnable prefix. */
-    if (count==299u ||
-        (captured_duration(0,0u)>=3274u && captured_duration(0,0u)<=5458u &&
-         captured_duration(0,1u)>=3311u && captured_duration(0,1u)<=5519u)) {
-        if (!Bosch144_Decode(captured_duration,0,count,dest)) {
-            receive_error=IR_RX_ERROR_PROTOCOL; return -1;
+    detected=Ac_Detect(captured_duration,0,count,dest);
+    if(detected==AC_DETECT_AMBIGUOUS) {
+        receive_error=IR_RX_ERROR_AMBIGUOUS;return IR_RECEIVE_AMBIGUOUS;
+    }
+    if(detected==AC_DETECT_INVALID) {
+        receive_error=IR_RX_ERROR_PROTOCOL;return -1;
+    }
+    if(detected==AC_DETECT_UNKNOWN) {
+        if(count>255u) {
+            receive_error=IR_RX_ERROR_UNSUPPORTED | IR_RX_ERROR_CAPACITY;
+            return IR_RECEIVE_UNSUPPORTED;
         }
-    } else {
-        if (count>255u) { receive_error=IR_RX_ERROR_CAPACITY; return -1; }
-        dest->length=count; dest->carrier_khz=38u; dest->format=UI_SIGNAL_RAW;
-        for (i=0u;i<count;++i) dest->timings[i]=captured_duration(0,i);
+        dest->length=count;dest->carrier_khz=38u;dest->format=UI_SIGNAL_RAW;
+        for(i=0u;i<count;++i) dest->timings[i]=captured_duration(0,i);
     }
     ready=0u; settling=1u; settle_at=IrPlatform_Now();
     return 1;
 }
 void EXTI9_5_IRQHandler(void) { (void)IrPlatform_RxPending(); }
-int IrHardware_Busy(void) { return transmitting!=0u; }
+int IrHardware_Busy(void) {
+    if(transmitting) return 1;
+    if(tx_idle_us && (uint32_t)(IrPlatform_Now()-tx_idle_at)<tx_idle_us) return 1;
+    tx_idle_us=0u;return 0;
+}
 int IrHardware_Send(const UiSignal *signal) {
     uint16_t i;
-    if (transmitting || !signal || signal->carrier_khz<30u ||
+    if (IrHardware_Busy() || !signal || signal->carrier_khz<30u ||
         signal->carrier_khz>60u) return 0;
-    if (signal->format==UI_SIGNAL_BOSCH144) {
-        if (!Bosch144_ValidateSignal(signal)) return 0;
-        tx_count=Bosch144_DurationCount(signal);
+    if (signal->format!=UI_SIGNAL_RAW) {
+        if (!Ac_Validate(signal)) return 0;
+        tx_count=Ac_DurationCount(signal);
+        if (!tx_count) return 0;
     } else if (signal->format==UI_SIGNAL_RAW) {
         if (!signal->length || signal->length>255u || !(signal->length&1u)) return 0;
         for (i=0u;i<signal->length;++i) if (!signal->timings[i]) return 0;
@@ -284,8 +296,8 @@ int IrHardware_Send(const UiSignal *signal) {
     transmitting=1u;
     IrPlatform_Carrier(transmit.carrier_khz);
     IrPlatform_Gate(1);
-    IrPlatform_Arm(transmit.format==UI_SIGNAL_BOSCH144 ?
-                   Bosch144_Duration(&transmit,0u) : transmit.timings[0]);
+    IrPlatform_Arm(transmit.format!=UI_SIGNAL_RAW ?
+                   Ac_Duration(&transmit,0u) : transmit.timings[0]);
     return 1;
 }
 void TIM3_IRQHandler(void) {
@@ -296,10 +308,13 @@ void TIM3_IRQHandler(void) {
         IrPlatform_Stop();
         settle_at=IrPlatform_Now();
         settling=1u;
+        tx_idle_at=settle_at;
+        tx_idle_us=(transmit.format==UI_SIGNAL_HAIER ||
+                    transmit.format==UI_SIGNAL_HAIER_YRW02)?150000u:0u;
         transmitting=0u;
         return;
     }
     IrPlatform_Gate(!(tx_index&1u));
-    IrPlatform_Arm(transmit.format==UI_SIGNAL_BOSCH144 ?
-                   Bosch144_Duration(&transmit,tx_index) : transmit.timings[tx_index]);
+    IrPlatform_Arm(transmit.format!=UI_SIGNAL_RAW ?
+                   Ac_Duration(&transmit,tx_index) : transmit.timings[tx_index]);
 }

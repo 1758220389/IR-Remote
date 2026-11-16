@@ -7,6 +7,7 @@
 #include "config_store.h"
 #include "flash_backend.h"
 #include "bosch144.h"
+#include "ac_codec.h"
 #include <string.h>
 
 static volatile uint32_t milliseconds;
@@ -44,10 +45,8 @@ static void initialize_ac_profile(UiProfile *profile)
 }
 static void send_signal(void *context,uint8_t profile,uint8_t key,const UiSignal *signal)
 {
-    Bosch144State next;
+    AcState next;
     UiProfile *p;
-    uint8_t power;
-    unsigned i;
     (void)context;
     ++g_app_diagnostics.tx_requests;
     if (profile>=UI_PROFILE_COUNT) { ++g_app_diagnostics.tx_rejected; return; }
@@ -57,20 +56,15 @@ static void send_signal(void *context,uint8_t profile,uint8_t key,const UiSignal
         else ++g_app_diagnostics.tx_rejected;
         return;
     }
-    if (IrHardware_Busy() || !Bosch144_StateFromSignal(&next,&p->keys[0])) {
+    if (IrHardware_Busy() || !Ac_ProfileLoad(&next,p)) {
         ++g_app_diagnostics.tx_rejected; return;
     }
-    Bosch144_SetPower(&next,(uint8_t)(p->kind==UI_PROFILE_BOSCH_ON));
-    if (!Bosch144_Button(&next,key) || !Bosch144_Generate(&next,&ui.captured) ||
+    if (!Ac_Button(&next,key) || !Ac_Encode(&next,&ui.captured) ||
         !IrHardware_Send(&ui.captured)) {
         ++g_app_diagnostics.tx_rejected; return;
     }
     ++g_app_diagnostics.tx_started;
-    power=next.power;
-    Bosch144_SetPower(&next,1u); /* Preserve settings even while power is OFF. */
-    (void)Bosch144_Generate(&next,&p->keys[0]);
-    for(i=1u;i<UI_KEY_COUNT;++i) p->keys[i]=p->keys[0];
-    p->kind=power?UI_PROFILE_BOSCH_ON:UI_PROFILE_BOSCH_OFF;
+    Ac_ProfileCommit(p,&next); /* Keep ON settings separately from power. */
     model_dirty=1u; selection_changed_at=milliseconds; ui.dirty=1u;
 }
 static int save_profile(void *context,uint8_t destination,const UiProfile *replacement)
@@ -131,9 +125,14 @@ static void service_application(void)
     if (ui.page==UI_PAGE_RECEIVING && !ui.receive_error) {
         received=IrHardware_TryReceive(&ui.captured);
         if (received>0) {
-            App_ReceiveSignal(&ui.captured); IrHardware_SetReceiveEnabled(0u);
+            if (!App_ReceiveSignal(&ui.captured)) Ui_ReceiveError(&ui,UI_RX_INVALID);
+            IrHardware_SetReceiveEnabled(0u);
         } else if (received<0) {
-            ui.receive_error=1u; ui.dirty=1u;
+            if (received==IR_RECEIVE_UNSUPPORTED && ui.learn_ac)
+                Ui_ReceiveError(&ui,UI_RX_UNSUPPORTED);
+            else if (received==IR_RECEIVE_AMBIGUOUS)
+                Ui_ReceiveError(&ui,UI_RX_AMBIGUOUS);
+            else Ui_ReceiveError(&ui,UI_RX_INVALID);
             IrHardware_SetReceiveEnabled(0u);
         }
     }

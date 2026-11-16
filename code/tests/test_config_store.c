@@ -62,7 +62,7 @@ static void roundtrip_test(void)
     assert(active==2 && memcmp(source,output,sizeof(source))==0);
     assert(erases[0]==1 && erases[1]==0);
     assert(flash[0][30]==0x5a && flash[0][31]==0xa5);
-    assert(flash[0][4]==2 && flash[0][5]==0);
+    assert(flash[0][4]==3 && flash[0][5]==0);
     assert(CONFIG_STORE_SIGNAL_SIZE==518u);
     assert(CONFIG_STORE_HEADER_SIZE+CONFIG_STORE_PAYLOAD_SIZE==7808u);
     assert(ConfigStore_Save(&store,source,1));
@@ -391,6 +391,21 @@ static void adapter_test(void)
     puts("flash_backend: mapped STM32 addresses/8-page bounds/status/readback/end-to-end PASS");
 }
 #endif
+static void legacy_schema2_upgrade_test(void)
+{
+    uint8_t active;
+    setup();bosch_profile(&source[0],UI_PROFILE_BOSCH_ON);
+    assert(ConfigStore_Save(&store,source,2u));
+    flash[0][4]=2u;repair_crc(0u);
+    assert(ConfigStore_Load(&store,output,&active));
+    assert(active==2u && !memcmp(output,source,sizeof(source)));
+    memcpy(preserved,flash[0],sizeof(preserved));
+    source[0].kind=UI_PROFILE_BOSCH_OFF;
+    assert(ConfigStore_Save(&store,source,1u));
+    assert(flash[1][4]==3u && !memcmp(preserved,flash[0],sizeof(preserved)));
+    assert(ConfigStore_Load(&store,output,&active));
+    assert(active==1u && output[0].kind==UI_PROFILE_BOSCH_OFF);
+}
 static void backend_failure_test(void)
 {
     uint8_t active;
@@ -409,11 +424,12 @@ static void backend_failure_test(void)
 }
 int main(void)
 {
+    legacy_schema2_upgrade_test();
     empty_test(); roundtrip_test(); compact_roundtrip_test(); reject_save_test(); reject_load_test();
     compact_header_test(); compact_off_test(); compact_rejection_test();
     atomic_test(); compact_atomic_test(); replacement_rollover_test(); backend_failure_test();
 #ifdef CONFIG_STORE_TEST_ADAPTER
     adapter_test();
 #endif
-    puts("config_store: 12 groups PASS"); return 0;
+    puts("config_store: schema2 upgrade/schema3/semantic/atomic tests PASS"); return 0;
 }

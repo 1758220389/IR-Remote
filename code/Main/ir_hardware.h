@@ -18,14 +18,19 @@
  * DMA 16-bit timestamps cannot identify whole wraps between adjacent edges;
  * sample Poll regularly. Frozen invalid data is retained for diagnosis.
  * Send copies the signal before returning; caller may mutate afterwards.
- * Busy reports transmission only (not receiver settling). */
+ * Busy includes transmission and Haier's required 150ms TX idle;
+ * other receiver settling does not make transmission busy. */
 void IrHardware_Init(void);
 void IrHardware_Poll(uint32_t now_ms);
 void IrHardware_SetReceiveEnabled(uint8_t enabled);
-/* 1: full validated/captured signal; 0: pending; -1: invalid, frozen.
- * On -1 dest is unchanged and repeated calls return -1. DMA data remains
- * frozen until explicit disable/re-enable (or Send). Never treat -1 as true. */
+/* 1: validated/captured signal; 0: pending; -1: invalid; -2: unknown
+ * beyond RAW capacity; -3: ambiguous. Negative results leave dest unchanged
+ * and remain frozen until disable/re-enable (or Send). Test >0, not truthy. */
 int IrHardware_TryReceive(UiSignal *dest);
+#define IR_RECEIVE_UNSUPPORTED (-2)
+#define IR_RECEIVE_AMBIGUOUS (-3)
+#define IR_RX_ERROR_UNSUPPORTED 0x4000u
+#define IR_RX_ERROR_AMBIGUOUS 0x8000u
 #define IR_RX_ERROR_DMA       0x100u
 #define IR_RX_ERROR_COUNTS    0x200u
 #define IR_RX_ERROR_INTERVAL  0x400u

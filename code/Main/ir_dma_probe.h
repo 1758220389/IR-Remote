@@ -34,6 +34,8 @@ extern volatile IrDmaProbe g_ir_dma_probe;
  * Counts/flags are frozen at End (not live DMA producer indices).
  * Call End on original collector READY as well as RX disable.
  */
+/* SWJ_CFG readback is not reliable: explicitly keep SWD, free JTAG pins. */
+uint32_t IrDmaProbe_CaptureMapr(uint32_t previous);
 void IrDmaProbe_Begin(void);
 void IrDmaProbe_End(void);
 

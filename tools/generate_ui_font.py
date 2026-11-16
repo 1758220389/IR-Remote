@@ -16,7 +16,7 @@ import PIL
 from PIL import Image, ImageDraw, ImageFont
 
 # Union of labels/instructions in pic/OLED页面.png plus concise split-row labels.
-TEXT = "配置学习接收中已单击任意按键完成绑定长确认切换继续退出保存至取消成功上下选择设置正常使用页标题闪烁信号短请遥控器等待返回其余"
+TEXT = "配置学习接收中已单击任意按键完成绑定长确认切换继续退出保存至取消成功上下选择设置正常使用页标题闪烁信号短请遥控器等待返回其余是否为空调识别需要开机状态协议匹配不唯一发原重试转普通固定过长未容量有限稍"
 
 
 def generate(font_path):

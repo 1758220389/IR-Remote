@@ -4,6 +4,7 @@
 #include "OLED.h"
 #include "ui_view.h"
 #include "ui_presenter.h"
+#include "bosch144.h"
 
 static unsigned char frame[8][128];
 static unsigned clears, updates, chars, images, replacements;
@@ -79,7 +80,7 @@ static void test_utf8_edges(void)
 static void export_pages(const char *directory)
 {
     unsigned page, x, y;
-    for (page = 0; page < 11; ++page) {
+    for (page = 0; page < 21; ++page) {
         char path[1024];
         FILE *file;
         UiState state;
@@ -91,7 +92,20 @@ static void export_pages(const char *directory)
         else if (page == 6) state.page=UI_PAGE_RECEIVED;
         else if (page == 7) { state.page=UI_PAGE_RECEIVING; state.learned_mask=1; }
         else if (page == 8) state.page=UI_PAGE_SAVE_SELECT;
-        else { state.page=UI_PAGE_RESULT; state.result=page==9 ? UI_RESULT_SAVED_RAM : UI_RESULT_CANCELLED; }
+        else if (page < 11) { state.page=UI_PAGE_RESULT; state.result=page==9 ? UI_RESULT_SAVED_RAM : UI_RESULT_CANCELLED; }
+        else if (page < 13) { state.page=UI_PAGE_DEVICE_TYPE;state.learn_ac=(uint8_t)(page==11); }
+        else if (page == 13) { state.page=UI_PAGE_RECEIVING;state.learn_ac=1; }
+        else if (page == 14) {
+            Bosch144State native;Bosch144_Init(&native);
+            state.page=UI_PAGE_AC_CONFIRM;state.learn_ac=1;
+            assert(Bosch144_Generate(&native,&state.captured));
+        } else if (page < 17) { state.page=UI_PAGE_AC_UNSUPPORTED;state.captured.length=(uint16_t)(page==15?3:0); }
+        else if (page < 20) { state.page=UI_PAGE_RECEIVING;state.learn_ac=1;state.receive_error=(uint8_t)(page==17?UI_RX_NEED_ON:page==18?UI_RX_AMBIGUOUS:UI_RX_INVALID); }
+        else {
+            Bosch144State native;Bosch144_Init(&native);
+            state.profiles[0].kind=UI_PROFILE_BOSCH_OFF;
+            assert(Bosch144_Generate(&native,&state.profiles[0].keys[0]));
+        }
         UiPresenter_Build(&state, &presentation);
         replacements = 0;
         UiView_Render(&presentation.view);
