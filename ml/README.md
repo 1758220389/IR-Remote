@@ -2,9 +2,9 @@
 
 当前正式遥控器已启用手势控制并通过 CW 升温、CCW 降温实体测试，见 [整合与验收](analysis/SHADOW.md)。下文独立采集／识别平台用于复现，不能直接用于正式固件；影子模式是历史阶段。
 
-复现顺序：安装 requirements.txt → Start-Capture.cmd 采集 → analysis/build_v1.py 生成清单与特征 → analysis/train_v1.py 训练评估 → analysis/export_recognizer.py 导出（--check 只核对冻结参数）→ Keil 构建。原始数据及质量／排除记录位于 data/real，冻结清单在 data/v1，参数与评估在 models/v1。详见 [分析](analysis/README.md)、[训练](analysis/TRAINING.md)、[独立部署](analysis/DEPLOYMENT.md)。
+复现顺序：安装 `requirements.txt` → `Start-Capture.cmd` 采集 → `analysis/build_v1.py` 生成清单与特征 → `analysis/train_v1.py` 训练评估 → `analysis/export_recognizer.py` 导出（--check 只核对冻结参数）→ Keil 构建。原始数据及质量／排除记录位于 `data/real`，冻结清单在 `data/v1`，参数与评估在 `models/v1`。详见 [分析](analysis/README.md)、[训练](analysis/TRAINING.md)、[独立部署](analysis/DEPLOYMENT.md)。
 
-冻结数据共 130 个有效样本，主集 120 个。三分类逻辑回归四轮留一会话交叉验证 118/120（98.33%），NONE 误触发 0/40；板端历史重放 128/128 与 Python 一致，另两条截断拒绝。独立识别相对采集固件增量 Flash 2288 B、RAM 64 B，处理约 125–250 µs，不是正式整合固件的增量或端到端耗时。
+冻结数据共 130 个有效样本，主集 120 个。三分类逻辑回归四轮留一会话交叉验证 118/120（98.33%），NONE 误触发 0/40；板端历史重放 128/128 与 Python 一致，另两条截断拒绝。独立识别相对采集固件增量 Flash 2,288 B、RAM 64 B，处理约 125～250 µs，不是正式整合固件的增量或端到端耗时。
 
 本目录提供 STM32 六轴数据采集固件和 Windows 端 Python 工具。在仓库根目录运行下文的 PowerShell 命令。使用 VS Code 时可选用 `ml\.venv\Scripts\python.exe` 作为解释器。
 
@@ -193,4 +193,4 @@ $sample = Get-ChildItem ml/data/synthetic/CW -Filter *.csv |
 
 正式控制已完成，见整合报告。上文连接失败、尚未集成及影子阶段描述为历史记录。当前灵敏度仍待后续版本优化，本轮不改模型。完整红外学习、配置持久化整机回归和更大规模实体准确率仍待验证。
 
-设备包路径由 GUI 选择，或设置环境变量 STM32_DFP_PACK；仓库不固定本机 Keil 安装路径。
+设备包路径由 GUI 选择，或设置环境变量 `STM32_DFP_PACK`；仓库不固定本机 Keil 安装路径。
