@@ -1,0 +1,50 @@
+{
+  "model": "C",
+  "purpose": "refit after evaluation",
+  "training_sessions": [
+    "pilot-20261117-185831-966",
+    "pilot-20261117-190204-766",
+    "pilot-20261117-192922-631",
+    "pilot-20261117-193153-290"
+  ],
+  "bias_dps": [
+    6.525539489136817,
+    1.2590465355255434,
+    -1.1619715208455668
+  ],
+  "classes": [
+    "CCW",
+    "CW",
+    "NONE"
+  ],
+  "C": 0.1,
+  "inner_errors": [
+    2,
+    0,
+    0
+  ],
+  "weights": [
+    [
+      0.043398716133737275
+    ],
+    [
+      -0.04385661735769375
+    ],
+    [
+      0.0004579012239564796
+    ]
+  ],
+  "intercept": [
+    -0.1653742612401553,
+    -0.24646977757847716,
+    0.4118440388186328
+  ],
+  "supplemental_correct": 10,
+  "supplemental_samples": 10,
+  "features": [
+    "gyro_integral_z_deg"
+  ],
+  "feature_count": 1,
+  "parameter_count": 6,
+  "scaler_parameter_count": 2
+}

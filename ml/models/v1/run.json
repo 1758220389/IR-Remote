@@ -1,0 +1,6 @@
+{
+  "manifest_sha256": "eebdec5665a40ec4148f8abacf66fa314ce69bfc4160047470d699c2397e6c79",
+  "sklearn": "1.9.1",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1"
+}

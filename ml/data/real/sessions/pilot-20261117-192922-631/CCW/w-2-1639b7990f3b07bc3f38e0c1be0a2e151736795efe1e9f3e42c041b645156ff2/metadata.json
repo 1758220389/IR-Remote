@@ -1,0 +1,36 @@
+{
+  "window_number": 2,
+  "batch_id": "w-2-1639b7990f3b07bc3f38e0c1be0a2e151736795efe1e9f3e42c041b645156ff2",
+  "session": "pilot-20261117-192922-631",
+  "label": "CCW",
+  "transport": "swd",
+  "protocol_version": 4,
+  "duration_ms": 561,
+  "sample_count": 57,
+  "truncated": false,
+  "saved_utc": "2026-11-17T11:30:36.095499+00:00",
+  "who_am_i": "0x70",
+  "sensor": "MPU6500",
+  "sample_rate_hz": 100,
+  "accel_range_g": 2,
+  "gyro_range_dps": 250,
+  "accel_lsb_per_g": 16384,
+  "gyro_lsb_per_dps": 131,
+  "stationary": false,
+  "quality": {
+    "samples": 57,
+    "interval_min_ms": 10,
+    "interval_max_ms": 10,
+    "unexpected_intervals": 0,
+    "duration_consistent": true,
+    "saturated": {
+      "ax": 0,
+      "ay": 0,
+      "az": 0,
+      "gx": 0,
+      "gy": 0,
+      "gz": 0
+    },
+    "passed": true
+  }
+}
