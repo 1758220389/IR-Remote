@@ -52,4 +52,3 @@ def read_snapshot(target, address, pending, state):
     if header(target, address) != state:
         return None
     return list(swd.SAMPLE.iter_unpack(raw))
-

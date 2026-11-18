@@ -305,4 +305,3 @@ class Collector:
                     self.stop.wait(2)
         except (OSError, RuntimeError, ValueError, TypeError) as error:
             self.emit("fatal", str(error))
-
