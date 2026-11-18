@@ -1,0 +1,556 @@
+[
+  {
+    "model": "A",
+    "fold": "pilot-20261117-185831-966",
+    "training_sessions": [
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.559502781656485,
+      1.2621628645555738,
+      -1.1417477524303705
+    ],
+    "inner_errors": [
+      0,
+      0,
+      0
+    ],
+    "setting": [
+      8,
+      6
+    ],
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 2,
+    "cw_below_deg": -8,
+    "ccw_above_deg": 6
+  },
+  {
+    "model": "B",
+    "fold": "pilot-20261117-185831-966",
+    "training_sessions": [
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.559502781656485,
+      1.2621628645555738,
+      -1.1417477524303705
+    ],
+    "inner_errors": [
+      1,
+      0,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C",
+    "fold": "pilot-20261117-185831-966",
+    "training_sessions": [
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.559502781656485,
+      1.2621628645555738,
+      -1.1417477524303705
+    ],
+    "inner_errors": [
+      0,
+      0,
+      0
+    ],
+    "setting": 0.1,
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 6,
+    "scaler_parameter_count": 2
+  },
+  {
+    "model": "B_duration",
+    "fold": "pilot-20261117-185831-966",
+    "training_sessions": [
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.559502781656485,
+      1.2621628645555738,
+      -1.1417477524303705
+    ],
+    "inner_errors": [
+      1,
+      0,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg",
+      "duration_ms"
+    ],
+    "feature_count": 2,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C_duration",
+    "fold": "pilot-20261117-185831-966",
+    "training_sessions": [
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.559502781656485,
+      1.2621628645555738,
+      -1.1417477524303705
+    ],
+    "inner_errors": [
+      0,
+      0,
+      0
+    ],
+    "setting": 0.1,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps",
+      "duration_ms"
+    ],
+    "feature_count": 3,
+    "parameter_count": 12,
+    "scaler_parameter_count": 6
+  },
+  {
+    "model": "A",
+    "fold": "pilot-20261117-190204-766",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.637176962186666,
+      1.261401264118304,
+      -1.2023260160147209
+    ],
+    "inner_errors": [
+      0,
+      0,
+      0
+    ],
+    "setting": [
+      8,
+      4
+    ],
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 2,
+    "cw_below_deg": -8,
+    "ccw_above_deg": 4
+  },
+  {
+    "model": "B",
+    "fold": "pilot-20261117-190204-766",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.637176962186666,
+      1.261401264118304,
+      -1.2023260160147209
+    ],
+    "inner_errors": [
+      1,
+      0,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps"
+    ],
+    "feature_count": 2,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C",
+    "fold": "pilot-20261117-190204-766",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.637176962186666,
+      1.261401264118304,
+      -1.2023260160147209
+    ],
+    "inner_errors": [
+      2,
+      0,
+      0
+    ],
+    "setting": 0.1,
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 6,
+    "scaler_parameter_count": 2
+  },
+  {
+    "model": "B_duration",
+    "fold": "pilot-20261117-190204-766",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.637176962186666,
+      1.261401264118304,
+      -1.2023260160147209
+    ],
+    "inner_errors": [
+      1,
+      0,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps",
+      "duration_ms"
+    ],
+    "feature_count": 3,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C_duration",
+    "fold": "pilot-20261117-190204-766",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-192922-631",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.637176962186666,
+      1.261401264118304,
+      -1.2023260160147209
+    ],
+    "inner_errors": [
+      0,
+      0,
+      0
+    ],
+    "setting": 10.0,
+    "features": [
+      "gyro_integral_z_deg",
+      "duration_ms"
+    ],
+    "feature_count": 2,
+    "parameter_count": 9,
+    "scaler_parameter_count": 4
+  },
+  {
+    "model": "A",
+    "fold": "pilot-20261117-192922-631",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.261763369857854,
+      1.203425697160394,
+      -1.1470047308301665
+    ],
+    "inner_errors": [
+      1,
+      0,
+      0
+    ],
+    "setting": [
+      8,
+      6
+    ],
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 2,
+    "cw_below_deg": -8,
+    "ccw_above_deg": 6
+  },
+  {
+    "model": "B",
+    "fold": "pilot-20261117-192922-631",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.261763369857854,
+      1.203425697160394,
+      -1.1470047308301665
+    ],
+    "inner_errors": [
+      2,
+      1,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps"
+    ],
+    "feature_count": 2,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C",
+    "fold": "pilot-20261117-192922-631",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.261763369857854,
+      1.203425697160394,
+      -1.1470047308301665
+    ],
+    "inner_errors": [
+      2,
+      0,
+      0
+    ],
+    "setting": 0.1,
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 6,
+    "scaler_parameter_count": 2
+  },
+  {
+    "model": "B_duration",
+    "fold": "pilot-20261117-192922-631",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.261763369857854,
+      1.203425697160394,
+      -1.1470047308301665
+    ],
+    "inner_errors": [
+      2,
+      1,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps",
+      "duration_ms"
+    ],
+    "feature_count": 3,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C_duration",
+    "fold": "pilot-20261117-192922-631",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-193153-290"
+    ],
+    "bias_dps": [
+      6.261763369857854,
+      1.203425697160394,
+      -1.1470047308301665
+    ],
+    "inner_errors": [
+      2,
+      0,
+      1
+    ],
+    "setting": 10.0,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps",
+      "gyro_abs_integral_z_deg",
+      "gyro_z_energy_ratio",
+      "duration_ms"
+    ],
+    "feature_count": 5,
+    "parameter_count": 18,
+    "scaler_parameter_count": 10
+  },
+  {
+    "model": "A",
+    "fold": "pilot-20261117-193153-290",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631"
+    ],
+    "bias_dps": [
+      6.608082856234097,
+      1.3029878339694658,
+      -1.156364305025445
+    ],
+    "inner_errors": [
+      1,
+      0,
+      0
+    ],
+    "setting": [
+      8,
+      6
+    ],
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 2,
+    "cw_below_deg": -8,
+    "ccw_above_deg": 6
+  },
+  {
+    "model": "B",
+    "fold": "pilot-20261117-193153-290",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631"
+    ],
+    "bias_dps": [
+      6.608082856234097,
+      1.3029878339694658,
+      -1.156364305025445
+    ],
+    "inner_errors": [
+      2,
+      1,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps"
+    ],
+    "feature_count": 2,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C",
+    "fold": "pilot-20261117-193153-290",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631"
+    ],
+    "bias_dps": [
+      6.608082856234097,
+      1.3029878339694658,
+      -1.156364305025445
+    ],
+    "inner_errors": [
+      2,
+      0,
+      0
+    ],
+    "setting": 0.1,
+    "features": [
+      "gyro_integral_z_deg"
+    ],
+    "feature_count": 1,
+    "parameter_count": 6,
+    "scaler_parameter_count": 2
+  },
+  {
+    "model": "B_duration",
+    "fold": "pilot-20261117-193153-290",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631"
+    ],
+    "bias_dps": [
+      6.608082856234097,
+      1.3029878339694658,
+      -1.156364305025445
+    ],
+    "inner_errors": [
+      2,
+      1,
+      0
+    ],
+    "setting": 2,
+    "features": [
+      "gyro_integral_z_deg",
+      "gyro_peak_abs_z_dps",
+      "duration_ms"
+    ],
+    "feature_count": 3,
+    "tree_depth": 2,
+    "tree_nodes": 5
+  },
+  {
+    "model": "C_duration",
+    "fold": "pilot-20261117-193153-290",
+    "training_sessions": [
+      "pilot-20261117-185831-966",
+      "pilot-20261117-190204-766",
+      "pilot-20261117-192922-631"
+    ],
+    "bias_dps": [
+      6.608082856234097,
+      1.3029878339694658,
+      -1.156364305025445
+    ],
+    "inner_errors": [
+      0,
+      0,
+      0
+    ],
+    "setting": 10.0,
+    "features": [
+      "gyro_integral_z_deg",
+      "duration_ms"
+    ],
+    "feature_count": 2,
+    "parameter_count": 9,
+    "scaler_parameter_count": 4
+  }
+]

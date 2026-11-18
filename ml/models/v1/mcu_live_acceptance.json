@@ -1,0 +1,101 @@
+{
+  "physical_bt6": [
+    {
+      "number": 1,
+      "flags": 0,
+      "count": 79,
+      "duration": 789,
+      "cycles": 15235,
+      "angle": 25.528894424438477,
+      "label": 0,
+      "comparison": "结果一致 · 角度差 -0.000001°"
+    },
+    {
+      "number": 2,
+      "flags": 0,
+      "count": 44,
+      "duration": 441,
+      "cycles": 9017,
+      "angle": -0.17184078693389893,
+      "label": 2,
+      "comparison": "结果一致 · 角度差 +0.000000°"
+    },
+    {
+      "number": 3,
+      "flags": 0,
+      "count": 94,
+      "duration": 941,
+      "cycles": 17968,
+      "angle": 0.4225037693977356,
+      "label": 2,
+      "comparison": "结果一致 · 角度差 +0.000000°"
+    },
+    {
+      "number": 4,
+      "flags": 2,
+      "count": 150,
+      "duration": 1500,
+      "cycles": 250,
+      "angle": 0.0,
+      "label": 3,
+      "comparison": "拒绝原因一致"
+    }
+  ],
+  "gpio_open_drain_smoke": [
+    {
+      "number": 1,
+      "flags": 0,
+      "count": 48,
+      "duration": 482,
+      "cycles": 9719,
+      "elapsed_us": 134.99,
+      "clock_hz": 72000000,
+      "mcu": "NONE",
+      "angle": 0.05605033040046692
+    },
+    {
+      "number": 2,
+      "flags": 0,
+      "count": 59,
+      "duration": 592,
+      "cycles": 11681,
+      "elapsed_us": 162.24,
+      "clock_hz": 72000000,
+      "mcu": "NONE",
+      "angle": 0.0740962028503418
+    },
+    {
+      "number": 3,
+      "flags": 1,
+      "count": 8,
+      "duration": 77,
+      "cycles": 247,
+      "elapsed_us": 3.43,
+      "clock_hz": 72000000,
+      "mcu": "REJECT",
+      "angle": 0.0
+    },
+    {
+      "number": 4,
+      "flags": 2,
+      "count": 150,
+      "duration": 1500,
+      "cycles": 250,
+      "elapsed_us": 3.47,
+      "clock_hz": 72000000,
+      "mcu": "REJECT",
+      "angle": 0.0
+    },
+    {
+      "number": 5,
+      "flags": 0,
+      "count": 52,
+      "duration": 522,
+      "cycles": 10422,
+      "elapsed_us": 144.75,
+      "clock_hz": 72000000,
+      "mcu": "NONE",
+      "angle": 0.06497186422348022
+    }
+  ]
+}

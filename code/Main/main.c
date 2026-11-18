@@ -9,6 +9,9 @@
 #include "bosch144.h"
 #include "ac_codec.h"
 #include <string.h>
+#ifdef GESTURE_SHADOW
+#include "gesture_shadow.h"
+#endif
 
 static volatile uint32_t milliseconds;
 static UiState ui;
@@ -19,7 +22,13 @@ static uint8_t saved_active, observed_active, model_dirty;
 static uint32_t selection_changed_at, last_service_ms;
 volatile AppDiagnostics g_app_diagnostics;
 
-void App_Tick1ms(void) { ++milliseconds; }
+void App_Tick1ms(void)
+{
+    ++milliseconds;
+#ifdef GESTURE_SHADOW
+    GestureShadow_Tick(milliseconds);
+#endif
+}
 int App_ReceiveSignal(const UiSignal *signal)
 {
     if (!Ui_Receive(&ui,signal,milliseconds)) return 0;
@@ -110,6 +119,9 @@ static void initialize_application(void)
     selection_changed_at=last_service_ms=0u;
     Buttons_Init(&buttons,BoardKeys_ReadRaw(),0u,on_button,&ui);
     IrHardware_Init();
+#ifdef GESTURE_SHADOW
+    GestureShadow_Init();
+#endif
 }
 static void service_application(void)
 {
@@ -151,6 +163,16 @@ static void service_application(void)
             selection_changed_at=milliseconds; /* Bounded retry, not a hot loop. */
         }
     }
+#ifdef GESTURE_SHADOW
+    {
+        uint8_t key=GestureShadow_Poll(milliseconds, ui.page==UI_PAGE_NORMAL &&
+                                      ui.profiles[ui.active_profile].kind!=UI_PROFILE_RAW);
+        if (key) {
+            const ButtonEvent event={key,BUTTON_SHORT};
+            on_button(&ui,&event);
+        }
+    }
+#endif
     if (ui.dirty) {
         UiPresenter_Build(&ui,&presentation); UiView_Render(&presentation.view); ui.dirty=0u;
     }

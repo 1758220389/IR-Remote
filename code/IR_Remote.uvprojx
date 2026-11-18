@@ -334,9 +334,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--no_multibyte_chars</MiscControls>
-              <Define>USE_STDPERIPH_DRIVER</Define>
+              <Define>USE_STDPERIPH_DRIVER,GESTURE_SHADOW</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Start;.\Library;.\Main</IncludePath>
+              <IncludePath>.\Start;.\Library;.\Main;..\ml\firmware</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -834,6 +834,16 @@
               <FileName>OLED_Data.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Library\OLED_Data.c</FilePath>
+            </File>
+            <File>
+              <FileName>gesture_shadow.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main\gesture_shadow.c</FilePath>
+            </File>
+            <File>
+              <FileName>gesture_recognizer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ml\firmware\gesture_recognizer.c</FilePath>
             </File>
           </Files>
         </Group>

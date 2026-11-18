@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+/firmware/*.uvoptx
+/firmware/DebugConfig/
+/data/*
+!/data/.gitkeep
+!/data/real/
+!/data/v1/
+!/data/shadow/
+/data/real/**/*.png
+/data/real/**/.capture*
+
+*.lock
+
+/data/real/**/.gui-phase.json
+/data/real/**/.test-phase.json
